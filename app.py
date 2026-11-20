@@ -87,69 +87,7 @@ def importance_bars():
     return ui.TagList(*rows)
 
 
-def about_panel():
-    rep = metrics["report"]
-    cm = pd.DataFrame(
-        metrics["confusion_matrix"],
-        index=["Actual Pass", "Actual Fail"],
-        columns=["Predicted Pass", "Predicted Fail"],
-    )
-    by_class = pd.DataFrame(
-        {
-            "Precision": [rep["High"]["precision"], rep["Low"]["precision"]],
-            "Recall": [rep["High"]["recall"], rep["Low"]["recall"]],
-            "F1-score": [rep["High"]["f1-score"], rep["Low"]["f1-score"]],
-        },
-        index=["Pass (High)", "Fail (Low)"],
-    ).round(2)
 
-    return ui.nav_panel(
-        "About the model",
-        ui.h4("How it works", class_="mt-3"),
-        ui.p(
-            "The app uses a Random Forest classifier (300 trees) trained on LMS activity "
-            "records from Machine Problem 2. The dataset labels students as High or Low; "
-            "this app reads ",
-            ui.tags.strong("High as Pass"),
-            " and ",
-            ui.tags.strong("Low as Fail"),
-            ".",
-        ),
-        ui.h4("Accuracy", class_="mt-4"),
-        ui.p(
-            ui.tags.strong(f"{metrics['cv_accuracy_mean']:.1%}"),
-            " cross-validated accuracy (5 folds, the most reliable estimate) and ",
-            ui.tags.strong(f"{metrics['test_accuracy']:.1%}"),
-            f" on a hold-out test set of {metrics['test_size']} students.",
-        ),
-        ui.p(
-            f"The original file had {metrics['rows_raw']:,} rows, of which "
-            f"{metrics['duplicates_removed']} were exact duplicates. They were removed "
-            "before the train/test split so that no student record appears in both sets. "
-            "Keeping them makes accuracy look higher (about 90%) but that figure is inflated."
-        ),
-        ui.p("Confusion matrix on the hold-out set:", class_="mb-1"),
-        table_html(cm),
-        ui.p("Precision, recall and F1-score by class:", class_="mb-1"),
-        table_html(by_class),
-        ui.h4("Which activity matters most", class_="mt-4"),
-        importance_bars(),
-        ui.h4("Limitations", class_="mt-4"),
-        ui.tags.ul(
-            ui.tags.li(
-                "The model only sees LMS activity. It knows nothing about grades, "
-                "attendance outside the LMS, or personal circumstances."
-            ),
-            ui.tags.li(
-                "Roughly 1 in 5 predictions on unseen students is wrong, so a result "
-                "should never be the sole basis for a decision."
-            ),
-            ui.tags.li(
-                "The Fail class is smaller in the cleaned data, so the model is less sure "
-                "about Fail predictions than Pass predictions."
-            ),
-        ),
-    )
 
 
 # --------------------------------------------------------------------- UI
@@ -179,7 +117,7 @@ app_ui = ui.page_fluid(
                 ),
                 ui.tags.div(ui.output_ui("result"), class_="mt-4"),
             ),
-            about_panel(),
+            #about_panel(),
         ),
         class_="app-wrap",
     ),
